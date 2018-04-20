@@ -1,0 +1,25 @@
+<div class="modal-header">
+  <h3 class="modal-title" id="modal-title">
+  {{getThreadTitle()}}
+  </h3>
+</div>
+<div class="modal-body sms-thread-modal" id="modal-body">
+  <div ng-repeat="msg in messages" class="chat-bubble-container" ng-class="msg.type*1 === 1 ? 'received': 'sent'">
+    <div ng-style="(msg.type*1 === 1 && ($index > 0 ? (messages[$index-1].type*1 === 1 ) : false) ) ? {'marginTop':'25px'} : {}"
+    ng-show="showdetails && msg.type*1 === 1">
+      <small>
+        {{(msg.name ? msg.name + ' ' : '') + msg.phone}}
+      </small>
+    </div>
+    <pre ng-click="showdetails = !showdetails" class="chat-bubble" title="{{msg.date | amCalendar:referenceTime:formats}}">{{msg.message}}
+    </pre>
+    <div style="" ng-show="showdetails" ng-class="{'text-right': msg.type*1 === 2}">
+      <small>
+        {{msg.date | amCalendar:referenceTime:formats}}
+      </small>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" type="button" ng-click="$dismiss()">Fermer</button>
+</div>

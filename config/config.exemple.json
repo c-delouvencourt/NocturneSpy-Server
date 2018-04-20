@@ -1,0 +1,34 @@
+{
+  "defaults": {
+    "charset": "utf8mb4",
+    "collate": "utf8mb4_unicode_ci"
+  },
+  "development": {
+    "username": "root",
+    "password": "root",
+    "database": "db",
+    "host": "localhost",
+    "dialect": "mysql",
+    "admin" : {
+      "username": "test",
+      "password": "test"
+    }
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "pool": {
+      "max": 5,
+      "min": 1,
+      "idle": 10000,
+      "maxIdleTime": 120000
+    },
+    "admin": {
+      "username": {
+        "use_env_variable": "ADMIN_USERNAME"
+      } ,
+      "password": {
+        "use_env_variable": "ADMIN_PASSWORD"
+      }
+    }
+  }
+}

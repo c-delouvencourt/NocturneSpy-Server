@@ -1,0 +1,41 @@
+{
+  "name": "androspy",
+  "version": "1.0.0",
+  "description": "NodeJS port of Dendroid server",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node_modules/.bin/sequelize db:migrate; ./node_modules/.bin/gulp",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/adonespitogo/dendroid-nodejs.git"
+  },
+  "keywords": [
+    "dendroid",
+    "nodejs",
+    "express"
+  ],
+  "author": "Adones Pitogo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adonespitogo/dendroid-nodejs/issues"
+  },
+  "homepage": "https://github.com/adonespitogo/dendroid-nodejs#readme",
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "express": "^4.14.1",
+    "gulp": "^3.9.1",
+    "gulp-angular-templatecache": "^2.0.0",
+    "gulp-concat": "^2.6.1",
+    "mysql": "^2.13.0",
+    "q": "^1.4.1",
+    "require-dir": "^0.3.1",
+    "sequelize": "^3.30.2",
+    "sequelize-cli": "^2.5.1",
+    "socket.io": "^1.7.2"
+  },
+  "devDependencies": {
+    "gulp-watch": "^4.3.11"
+  }
+}

